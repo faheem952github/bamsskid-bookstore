@@ -1,0 +1,25 @@
+services:
+  api:
+    build: .
+    image: bamsskid/bookstore-api:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - /config/.env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    restart: always
+    env_file:
+      - /config/.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
