@@ -30,7 +30,7 @@ class Settings(BaseSettings):
         return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     # Service Base url
-    BASE_URL: ClassVar[str] = os.getenv('BASE_URL', 'http://localhost:7000')
+    BASE_URL: ClassVar[str] = os.getenv('BASE_URL', 'http://localhost:8000')
 
     # Security settings
     SECRET_KEY: str = os.getenv('SECRET_KEY', "defaultsecretkey")
