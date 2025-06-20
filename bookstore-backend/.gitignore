@@ -1,7 +1,7 @@
 .idea
 .venv\
-
-config/.env
+config/.env.local
+config/.env.docker
 ../.idea/
 
 # Byte-compiled / optimized / DLL files
@@ -92,5 +92,4 @@ docker-compose.override.yml
 Thumbs.db
 ehthumbs.db
 
-
-
+other_data.txt
