@@ -3,10 +3,21 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-
+from pathlib import Path
+from dotenv import load_dotenv
 
 import sys
 import os
+
+# Detect environment
+RUNNING_IN_DOCKER = os.getenv("RUNNING_IN_DOCKER", "false").lower() == "true"
+
+# Load correct .env
+if RUNNING_IN_DOCKER:
+    load_dotenv(dotenv_path=Path("config/.env.docker"))
+else:
+    load_dotenv(dotenv_path=Path("config/.env.local"))
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from config.config import settings  # ← this reads from /config/.env.docker
 from app.account.models import User, UserProfile, UserSession, AuditLog

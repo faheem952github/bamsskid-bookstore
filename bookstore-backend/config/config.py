@@ -6,9 +6,15 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 # Get the path to the .env.docker file from the environment variable
-env_file_path = os.getenv("ENV_FILE_PATH", "config/.env.docker")
+env_file_path = None
+RUNNING_IN_DOCKER = os.environ.get("RUNNING_IN_DOCKER", "false").lower() == "true"
 
-# Load the .env.docker file from the specified path
+# Load appropriate .env file
+if RUNNING_IN_DOCKER:
+    env_file_path = os.getenv("ENV_FILE_PATH", "config/.env.docker")
+else:
+    env_file_path = os.getenv("ENV_FILE_PATH", "config/.env.local")
+
 load_dotenv(dotenv_path=Path(env_file_path))
 
 
@@ -22,12 +28,18 @@ class Settings(BaseSettings):
     DB_NAME: str = os.getenv("POSTGRES_DB", "bookstore")
     DB_HOST: str = os.getenv("USER_DB_HOST", "localhost")
     DB_PORT: str = os.getenv("USER_DB_PORT", "5432")
+    LOCAL_DATABASE_URL: str = os.getenv("LOCAL_DATABASE_URL", "")
+    DOCKER_DATABASE_URL: str = os.getenv("DOCKER_DATABASE_URL", "")
 
     # Construct the database URL
-    # DB_URL: str = f"postgresql://{DB_USER}:{DB_PASSWORD}@db:{DB_PORT}/{DB_NAME}"
-    @property
-    def DB_URL(self) -> str:
-        return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+    # DB_URL: str = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    # @property
+    # def DB_URL(self) -> str:
+    #     return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+
+    DB_URL: ClassVar[str]  = (
+        DOCKER_DATABASE_URL if RUNNING_IN_DOCKER else LOCAL_DATABASE_URL
+    )
 
     # Service Base url
     BASE_URL: ClassVar[str] = os.getenv('BASE_URL', 'http://localhost:8000')
