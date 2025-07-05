@@ -8,18 +8,21 @@ services:
       - .:/app
     env_file:
       - /config/.env.docker
-    depends_on:
-      - db
+    environment:
+      - RUNNING_IN_DOCKER=true
 
-  db:
-    image: postgres:15
-    restart: always
-    env_file:
-      - /config/.env.docker
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+#    depends_on:
+#      - db
 
-volumes:
-  postgres_data:
+#  db:
+#    image: postgres:15
+#    restart: always
+#    env_file:
+#      - /config/.env.docker
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#    ports:
+#      - "5432:5432"
+#
+#volumes:
+#  postgres_data:
