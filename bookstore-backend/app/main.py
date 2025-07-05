@@ -1,15 +1,18 @@
 import uvicorn
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.exc import IntegrityError
+
 from fastapi.exceptions import RequestValidationError, HTTPException
 from fastapi.responses import RedirectResponse
-from pydantic import ValidationError
-# from app.account.routes.auth_routes import auth_router
+from app.account.routes.auth_routes import auth_router
+from app.account.routes.user_routes import user_router
 from app.books.routes import books_router
 
 from app.middleware.exception_handlers import (
     error_handling_middleware,
     validation_exception_handler,
+    handle_integrity_error,
     handle_http_exception
 )
 
@@ -36,7 +39,7 @@ app.add_middleware(
 # Register the exception handlers
 app.add_exception_handler(HTTPException, handle_http_exception)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
-app.add_exception_handler(ValidationError, validation_exception_handler)
+app.add_exception_handler(IntegrityError, handle_integrity_error)
 
 # Register the error handling middleware
 app.middleware("http")(error_handling_middleware)
@@ -53,7 +56,8 @@ def health_check():
 
 
 # Applications Routes
-# app.include_router(auth_router)
+app.include_router(auth_router)
+app.include_router(user_router)
 app.include_router(books_router)
 
 
